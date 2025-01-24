@@ -1,0 +1,1 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=fun.golinks.grpc.pure.starter.GrpcPureAutoConfiguration
