@@ -36,7 +36,7 @@ public class GrpcPureAutoConfiguration {
 
     @Bean
     public GrpcChannels grpcChannels(NameResolverProvider nameResolverProvider,
-                                     GrpcThreadPoolExecutor grpcThreadPoolExecutor) throws Throwable {
+            GrpcThreadPoolExecutor grpcThreadPoolExecutor) throws Throwable {
         return GrpcChannels.newBuilder().setNameResolverProvider(nameResolverProvider)
                 .setExecutor(grpcThreadPoolExecutor)
                 .setClientInterceptors(Collections.singleton(new LoggerClientInterceptor())).build();
@@ -44,7 +44,7 @@ public class GrpcPureAutoConfiguration {
 
     @Bean
     public GrpcServer grpcServer(ServerRegister serverRegister, GrpcPureProperties grpcPureProperties,
-                                 List<BindableService> bindableServices) throws Throwable {
+            List<BindableService> bindableServices) throws Throwable {
         return GrpcServer.newBuilder().setPort(grpcPureProperties.getServer().getPort())
                 .addService(bindableServices.toArray(new BindableService[0])).setServerRegister(serverRegister).build();
     }
