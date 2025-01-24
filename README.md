@@ -83,6 +83,21 @@ message HelloReply {
 }
 ```
 
+### 配置属性以及默认值
+
+```yaml
+grpc:
+  pure:
+    server:
+      port: 9999
+  discovery:
+    type: nacos
+    nacos:
+      address: 127.0.0.1:8848
+      username: nacos
+      password: nacos
+```
+
 ### 【服务端】实现Greeter服务
 
 ```java
@@ -90,7 +105,9 @@ import fun.golinks.grpc.pure.GreeterGrpc;
 import fun.golinks.grpc.pure.HelloReply;
 import fun.golinks.grpc.pure.HelloRequest;
 import io.grpc.stub.StreamObserver;
+import org.springframework.stereotype.Service;
 
+@Service
 public class GreeterRemote extends GreeterGrpc.GreeterImplBase {
 
     @Override
@@ -109,7 +126,6 @@ public class GreeterRemote extends GreeterGrpc.GreeterImplBase {
 import fun.golinks.grpc.pure.GreeterGrpc;
 import fun.golinks.grpc.pure.GrpcChannels;
 import fun.golinks.grpc.pure.starter.GrpcPureAutoConfiguration;
-import fun.golinks.grpc.pure.starter.remote.GreeterRemote;
 import io.grpc.ManagedChannel;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -123,13 +139,7 @@ public class GrpcPureConfig {
         ManagedChannel managedChannel = grpcChannels.create("nacos://greeter");
         return GreeterGrpc.newBlockingStub(managedChannel);
     }
-
-    @Bean
-    public GreeterRemote greeterRemote() {
-        return new GreeterRemote();
-    }
 }
-
 
 ```
 
