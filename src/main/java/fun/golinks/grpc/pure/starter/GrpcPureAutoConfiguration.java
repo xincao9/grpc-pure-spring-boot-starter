@@ -31,8 +31,8 @@ public class GrpcPureAutoConfiguration {
     @Bean
     public GrpcThreadPoolExecutor grpcThreadPoolExecutor() {
         int corePoolSize = Runtime.getRuntime().availableProcessors() * 2;
-        return GrpcExecutors.newGrpcThreadPoolExecutor("grpc-invoke", corePoolSize, corePoolSize * 4, 1L, TimeUnit.MINUTES,
-                new LinkedBlockingDeque<>(1000), new ThreadPoolExecutor.CallerRunsPolicy());
+        return GrpcExecutors.newGrpcThreadPoolExecutor("grpc-invoke", corePoolSize, corePoolSize * 4, 1L,
+                TimeUnit.MINUTES, new LinkedBlockingDeque<>(1000), new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
     @Bean
