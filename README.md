@@ -19,7 +19,7 @@ Grpc作为优秀的开源框架受到大厂的青睐，但是对于小企业来�
 <dependency>
     <groupId>fun.golinks</groupId>
     <artifactId>grpc-pure-spring-boot-starter</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
