@@ -11,53 +11,35 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class GrpcPureProperties {
 
     /**
-     * 发现中心
+     * 发现中心配置
      */
-    private Discovery discovery = new Discovery();
+    private DiscoveryConfig discovery = new DiscoveryConfig();
 
     /**
-     * 服务
+     * 服务配置
      */
-    private Server server = new Server();
+    private ServerConfig server = new ServerConfig();
 
     @Data
-    public static class Discovery {
+    public static class DiscoveryConfig {
         /**
-         * 类型
+         * 类型 (默认值：nacos)
          */
-        private String type = "nacos";
+        public static final String DEFAULT_TYPE = "nacos";
+
+        private String type = DEFAULT_TYPE;
 
         /**
-         * nacos配置
+         * Nacos 配置
          */
-        private Nacos nacos = new Nacos();
+        private NacosProperties nacos = new NacosProperties();
     }
 
     @Data
-    public static class Nacos {
-        /**
-         * 地址
-         */
-        private String address = "127.0.0.1:8848";
-
-        /**
-         * 用户名
-         */
-        private String username = "nacos";
-
-        /**
-         * 密码
-         */
-        private String password = "nacos";
-    }
-
-    @Data
-    public static class Server {
-
+    public static class ServerConfig {
         /**
          * 监听端口
          */
         private Integer port = 9999;
     }
-
 }
