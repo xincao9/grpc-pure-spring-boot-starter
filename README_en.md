@@ -1,27 +1,27 @@
 # grpc-pure-spring-boot-starter
 
-`grpc-pure-spring-boot-starter` 是一个简化 gRPC 集成到 Spring Boot 应用中的轻量级框架。gRPC 作为优秀的开源 RPC 框架，在许多大型企业中被广泛使用。然而，对于小型企业而言，缺乏扩展能力可能会成为阻碍大规模使用的难点。本项目基于本人在互联网公司参与大规模 gRPC 服务落地项目的经验沉淀，为开发者提供一个易用且实用的集成示例。
+`grpc-pure-spring-boot-starter` is a lightweight framework that simplifies the integration of gRPC into Spring Boot applications. As an excellent open-source RPC framework, gRPC is widely adopted by large enterprises. However, smaller organizations may face challenges in expanding and customizing it effectively. This project is based on my prior experience of implementing large-scale gRPC services in a previous internet company. It aims to provide developers with an easy-to-use and efficient integration example.
 
-## 核心功能
+## Core Features
 
-1. **服务端扩展能力**：
-    - 提供对注册中心的适配支持，扩展性强。
-    - 默认内置对 `Nacos` 注册中心的支持。
+1. **Server-Side Enhancements**:
+    - Provides integration slots for service registration, enabling easy adaptation to different registries.
+    - Built-in support for the `Nacos` registry.
 
-2. **客户端增强功能**：
-    - 增加了连接 Ping 机制，用于保持连接的活跃性。
-    - 提供对服务发现的适配支持，方便扩展。
-    - 默认内置支持 `nacos://{服务名}` 协议格式的服务发现。
+2. **Client-Side Enhancements**:
+    - Adds a connection `Ping` mechanism to maintain connection health.
+    - Enables effortless service discovery, adaptable to various registries.
+    - Supports `nacos://{ServiceName}` protocol format for service discovery out of the box.
 
-## 快速开始
+## Quick Start
 
-### 环境准备
+### Prerequisites
 
-本项目示例代码依赖于 Nacos 注册中心。您可以参考 [Nacos 官方快速启动指南](https://nacos.io/docs/v2.3/quickstart/quick-start/) 安装和启动 Nacos Server。
+The examples in this project depend on the Nacos registry. Please refer to the [Nacos Quick Start Guide](https://nacos.io/docs/v2.3/quickstart/quick-start/) to install and start a Nacos Server instance.
 
-### 添加依赖
+### Add Dependencies
 
-在您的 Maven 项目中添加如下依赖：
+Add the following dependency to your Maven project:
 
 ```xml
 <dependency>
@@ -31,7 +31,9 @@
 </dependency>
 ```
 
-### 可选：配置 Maven 插件以编译 Protobuf 文件
+### Optional: Configure Protobuf Compilation
+
+You can configure the Maven Protobuf plugin to compile `.proto` files as shown below:
 
 ```xml
 <build>
@@ -65,9 +67,9 @@
 </build>
 ```
 
-### 定义 Protobuf 文件（`greeter.proto`）
+### Define Protobuf File (`greeter.proto`)
 
-在 `src/main/proto` 目录下创建如下 `greeter.proto` 文件：
+Create a `greeter.proto` file in the `src/main/proto` directory, as shown below:
 
 ```protobuf
 syntax = "proto3";
@@ -76,25 +78,25 @@ package fun.golinks.grpc.pure;
 
 option java_multiple_files = true;
 
-// Greeting 服务定义
+// Greeting Service Definition
 service Greeter {
   rpc SayHello (HelloRequest) returns (HelloReply);
 }
 
-// 请求消息（包含用户名称）
+// Request message containing the user's name
 message HelloRequest {
   string name = 1;
 }
 
-// 响应消息（包含问候语）
+// Response message containing the greeting
 message HelloReply {
   string message = 1;
 }
 ```
 
-### 配置属性及默认值
+### Configuration Properties and Default Values
 
-在 `application.yml` 文件中配置 gRPC 相关属性，以下为默认值示例：
+Configure gRPC-related settings in the `application.yml` file. Below is an example with default values:
 
 ```yaml
 grpc:
@@ -109,9 +111,9 @@ grpc:
       password: nacos
 ```
 
-### 【服务端】实现 Greeter 服务
+### Server-Side: Implement Greeter Service
 
-创建一个 Spring Bean，由 gRPC 框架负责管理服务端逻辑：
+Create a Spring-managed Bean representing the server-side implementation of the Greeting Service:
 
 ```java
 import fun.golinks.grpc.pure.GreeterGrpc;
@@ -134,9 +136,9 @@ public class GreeterRemote extends GreeterGrpc.GreeterImplBase {
 }
 ```
 
-### 【客户端】配置 GrpcPure
+### Client-Side: Configure GrpcPure
 
-创建 gRPC 客户端 Bean，通过 `Nacos` 服务发现机制连接远程服务。
+Set up the client configuration to connect to the service using the `nacos://` protocol:
 
 ```java
 import fun.golinks.grpc.pure.GreeterGrpc;
@@ -156,9 +158,9 @@ public class GrpcPureConfig {
 }
 ```
 
-### 【客户端】调用远程服务
+### Client-Side: Call Remote Services
 
-使用配置的 `GreeterBlockingStub` 调用远程服务接口：
+Leverage the client configuration to call the gRPC service:
 
 ```java
 import fun.golinks.grpc.pure.GreeterGrpc;
@@ -193,10 +195,10 @@ public class GreeterRemoteTests {
 }
 ```
 
-## 许可证
+## License
 
-本项目采用 [MIT License](./LICENSE) 开源协议，欢迎自由使用和修改。
+This project is licensed under the [MIT License](./LICENSE), making it freely available for usage and modification.
 
 ---
 
-通过配置 `grpc-pure-spring-boot-starter`，您可以轻松将 gRPC 集成到 Spring Boot 应用中，并享受简洁、高效、可扩展的 RPC 解决方案！
+By integrating `grpc-pure-spring-boot-starter`, you can effortlessly integrate gRPC into your Spring Boot applications and enjoy a simple, efficient, and scalable RPC solution!
