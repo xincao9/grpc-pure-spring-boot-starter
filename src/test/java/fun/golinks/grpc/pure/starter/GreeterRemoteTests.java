@@ -10,22 +10,28 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @SpringBootTest(classes = GrpcPureConfig.class)
 public class GreeterRemoteTests {
 
+    private static final int RANDOM_STRING_LENGTH = 32;
+
     @Resource
     private GreeterGrpc.GreeterBlockingStub greeterBlockingStub;
 
     @Test
-    public void sayHello() {
+    public void testSayHello() {
         for (int i = 0; i < 100; i++) {
-            HelloReply helloReply = greeterBlockingStub.withDeadlineAfter(10000, TimeUnit.MILLISECONDS)
-                    .sayHello(HelloRequest.newBuilder().setName(RandomStringUtils.randomAlphabetic(32)).build());
-            log.info("helloReply: {}", helloReply);
+            HelloRequest request = createHelloRequest();
+            log.info("REQUEST: {}", request);
+            HelloReply response = greeterBlockingStub.sayHello(request);
+            log.info("RESPONSE: {}", response);
         }
     }
 
+    private HelloRequest createHelloRequest() {
+        String randomName = RandomStringUtils.randomAlphabetic(RANDOM_STRING_LENGTH);
+        return HelloRequest.newBuilder().setName(randomName).build();
+    }
 }

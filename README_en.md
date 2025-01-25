@@ -125,14 +125,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class GreeterRemote extends GreeterGrpc.GreeterImplBase {
 
-    @Override
-    public void sayHello(HelloRequest req, StreamObserver<HelloReply> responseObserver) {
-        HelloReply reply = HelloReply.newBuilder()
-                .setMessage(String.format("Server: Hello %s", req.getName()))
-                .build();
-        responseObserver.onNext(reply);
-        responseObserver.onCompleted();
-    }
+   private static final String GREETING_PREFIX = "Server:Hello ";
+
+   @Override
+   public void sayHello(HelloRequest req, StreamObserver<HelloReply> responseObserver) {
+      HelloReply reply = buildHelloReply(req.getName());
+      responseObserver.onNext(reply);
+      responseObserver.onCompleted();
+   }
+
+   private HelloReply buildHelloReply(String name) {
+      return HelloReply.newBuilder()
+              .setMessage(GREETING_PREFIX + name)
+              .build();
+   }
 }
 ```
 
@@ -150,11 +156,18 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GrpcPureConfig {
 
-    @Bean
-    public GreeterGrpc.GreeterBlockingStub greeterBlockingStub(GrpcChannels grpcChannels) {
-        ManagedChannel managedChannel = grpcChannels.create("nacos://greeter");
-        return GreeterGrpc.newBlockingStub(managedChannel);
-    }
+   private static final String GREETER_SERVICE_URL = "nacos://greeter";
+
+   @Bean
+   public GreeterGrpc.GreeterBlockingStub greeterBlockingStub(GrpcChannels grpcChannels) {
+      ManagedChannel channel = grpcChannels.create(GREETER_SERVICE_URL);
+      return GreeterGrpc.newBlockingStub(channel);
+   }
+
+   @Bean
+   public GreeterRemote greeterRemote() {
+      return new GreeterRemote();
+   }
 }
 ```
 
@@ -178,20 +191,25 @@ import java.util.concurrent.TimeUnit;
 @SpringBootTest(classes = GrpcPureConfig.class)
 public class GreeterRemoteTests {
 
-    @Resource
-    private GreeterGrpc.GreeterBlockingStub greeterBlockingStub;
+   private static final int RANDOM_STRING_LENGTH = 32;
 
-    @Test
-    public void sayHello() {
-        for (int i = 0; i < 100; i++) {
-            HelloReply helloReply = greeterBlockingStub
-                    .withDeadlineAfter(10, TimeUnit.SECONDS)
-                    .sayHello(HelloRequest.newBuilder()
-                            .setName(RandomStringUtils.randomAlphabetic(32))
-                            .build());
-            log.info("Response: {}", helloReply);
-        }
-    }
+   @Resource
+   private GreeterGrpc.GreeterBlockingStub greeterBlockingStub;
+
+   @Test
+   public void testSayHello() {
+      for (int i = 0; i < 100; i++) {
+         HelloRequest request = createHelloRequest();
+         log.info("REQUEST: {}", request);
+         HelloReply response = greeterBlockingStub.sayHello(request);
+         log.info("RESPONSE: {}", response);
+      }
+   }
+
+   private HelloRequest createHelloRequest() {
+      String randomName = RandomStringUtils.randomAlphabetic(RANDOM_STRING_LENGTH);
+      return HelloRequest.newBuilder().setName(randomName).build();
+   }
 }
 ```
 
