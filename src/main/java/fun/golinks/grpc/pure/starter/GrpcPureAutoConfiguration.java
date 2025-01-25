@@ -79,9 +79,9 @@ public class GrpcPureAutoConfiguration {
             if (StringUtils.isBlank(appName)) {
                 appName = applicationName;
             }
-            return NacosServerRegister.newBuilder().setAppName(appName)
-                    .setServerAddress(nacosProperties.getAddress()).setUsername(nacosProperties.getUsername())
-                    .setPassword(nacosProperties.getPassword()).setPort(grpcPureProperties.getServer().getPort()) // 后端服务监听端口
+            return NacosServerRegister.newBuilder().setAppName(appName).setServerAddress(nacosProperties.getAddress())
+                    .setUsername(nacosProperties.getUsername()).setPassword(nacosProperties.getPassword())
+                    .setPort(grpcPureProperties.getServer().getPort()) // 后端服务监听端口
                     .build();
         }
     }
