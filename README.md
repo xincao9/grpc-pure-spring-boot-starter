@@ -101,12 +101,12 @@ grpc:
   pure:
     server:
       port: 9999
-  discovery:
-    type: nacos
-    nacos:
-      address: 127.0.0.1:8848
-      username: nacos
-      password: nacos
+    discovery:
+      type: nacos
+      nacos:
+        address: 127.0.0.1:8848
+        username: nacos
+        password: nacos
 ```
 
 ### 【服务端】实现 Greeter 服务
