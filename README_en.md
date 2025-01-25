@@ -11,7 +11,7 @@
 2. **Client-Side Enhancements**:
     - Adds a connection `Ping` mechanism to maintain connection health.
     - Enables effortless service discovery, adaptable to various registries.
-    - Supports `nacos://{ServiceName}` protocol format for service discovery out of the box.
+    - Supports `nacos://{AppName}` protocol format for service discovery out of the box.
 
 ## Quick Start
 
@@ -157,11 +157,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GrpcPureConfig {
 
-   private static final String GREETER_SERVICE_URL = "nacos://greeter";
+   private static final String GREETER_APP_URL = "nacos://greeter";
 
    @Bean
    public GreeterGrpc.GreeterBlockingStub greeterBlockingStub(GrpcChannels grpcChannels) {
-      ManagedChannel channel = grpcChannels.create(GREETER_SERVICE_URL);
+      ManagedChannel channel = grpcChannels.create(GREETER_APP_URL);
       return GreeterGrpc.newBlockingStub(channel);
    }
 

@@ -13,11 +13,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GrpcPureConfig {
 
-    private static final String GREETER_SERVICE_URL = "nacos://greeter";
+    private static final String GREETER_APP_URL = "nacos://greeter";
 
     @Bean
     public GreeterGrpc.GreeterBlockingStub greeterBlockingStub(GrpcChannels grpcChannels) {
-        ManagedChannel channel = grpcChannels.create(GREETER_SERVICE_URL);
+        ManagedChannel channel = grpcChannels.create(GREETER_APP_URL);
         return GreeterGrpc.newBlockingStub(channel);
     }
 

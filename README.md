@@ -11,7 +11,7 @@
 2. **客户端增强功能**：
     - 增加了连接 Ping 机制，用于保持连接的活跃性。
     - 提供对服务发现的适配支持，方便扩展。
-    - 默认内置支持 `nacos://{服务名}` 协议格式的服务发现。
+    - 默认内置支持 `nacos://{应用名}` 协议格式的服务发现。
 
 ## 快速开始
 
@@ -155,11 +155,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GrpcPureConfig {
 
-   private static final String GREETER_SERVICE_URL = "nacos://greeter";
+   private static final String GREETER_APP_URL = "nacos://greeter";
 
    @Bean
    public GreeterGrpc.GreeterBlockingStub greeterBlockingStub(GrpcChannels grpcChannels) {
-      ManagedChannel channel = grpcChannels.create(GREETER_SERVICE_URL);
+      ManagedChannel channel = grpcChannels.create(GREETER_APP_URL);
       return GreeterGrpc.newBlockingStub(channel);
    }
 
