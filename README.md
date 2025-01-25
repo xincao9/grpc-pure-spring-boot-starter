@@ -98,15 +98,16 @@ message HelloReply {
 
 ```yaml
 grpc:
-  pure:
-    server:
-      port: 9999
-    discovery:
-      type: nacos
-      nacos:
-        address: 127.0.0.1:8848
-        username: nacos
-        password: nacos
+   pure:
+      app-name: ${spring.application.name}
+      server:
+         port: 9999
+      discovery:
+         type: nacos
+         nacos:
+            address: 127.0.0.1:8848
+            username: nacos
+            password: nacos
 ```
 
 ### 【服务端】实现 Greeter 服务

@@ -11,6 +11,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class GrpcPureProperties {
 
     /**
+     * 应用名
+     */
+    private String appName;
+
+    /**
      * 发现中心配置
      */
     private DiscoveryConfig discovery = new DiscoveryConfig();

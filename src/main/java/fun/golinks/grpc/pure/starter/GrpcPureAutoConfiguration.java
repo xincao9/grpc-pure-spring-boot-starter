@@ -10,6 +10,7 @@ import fun.golinks.grpc.pure.util.GrpcExecutors;
 import fun.golinks.grpc.pure.util.GrpcThreadPoolExecutor;
 import io.grpc.BindableService;
 import io.grpc.NameResolverProvider;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -74,7 +75,11 @@ public class GrpcPureAutoConfiguration {
 
         @Bean
         public ServerRegister serverRegister(GrpcPureProperties grpcPureProperties) throws Throwable {
-            return NacosServerRegister.newBuilder().setAppName(applicationName)
+            String appName = grpcPureProperties.getAppName();
+            if (StringUtils.isBlank(appName)) {
+                appName = applicationName;
+            }
+            return NacosServerRegister.newBuilder().setAppName(appName)
                     .setServerAddress(nacosProperties.getAddress()).setUsername(nacosProperties.getUsername())
                     .setPassword(nacosProperties.getPassword()).setPort(grpcPureProperties.getServer().getPort()) // 后端服务监听端口
                     .build();

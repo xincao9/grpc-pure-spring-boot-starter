@@ -100,15 +100,16 @@ Configure gRPC-related settings in the `application.yml` file. Below is an examp
 
 ```yaml
 grpc:
-  pure:
-    server:
-      port: 9999
-    discovery:
-      type: nacos
-      nacos:
-        address: 127.0.0.1:8848
-        username: nacos
-        password: nacos
+   pure:
+      app-name: ${spring.application.name}
+      server:
+         port: 9999
+      discovery:
+         type: nacos
+         nacos:
+            address: 127.0.0.1:8848
+            username: nacos
+            password: nacos
 ```
 
 ### Server-Side: Implement Greeter Service
