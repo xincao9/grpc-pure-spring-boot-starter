@@ -5,7 +5,6 @@ import fun.golinks.grpc.pure.GrpcServer;
 import fun.golinks.grpc.pure.discovery.ServerRegister;
 import fun.golinks.grpc.pure.discovery.nacos.NacosNameResolverProvider;
 import fun.golinks.grpc.pure.discovery.nacos.NacosServerRegister;
-import fun.golinks.grpc.pure.interceptor.InternalClientInterceptor;
 import fun.golinks.grpc.pure.util.GrpcExecutors;
 import fun.golinks.grpc.pure.util.GrpcThreadPoolExecutor;
 import io.grpc.BindableService;
@@ -18,7 +17,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -43,8 +41,7 @@ public class GrpcPureAutoConfiguration {
     public GrpcChannels grpcChannels(NameResolverProvider nameResolverProvider,
             GrpcThreadPoolExecutor grpcThreadPoolExecutor) throws Throwable {
         return GrpcChannels.newBuilder().setNameResolverProvider(nameResolverProvider)
-                .setExecutor(grpcThreadPoolExecutor)
-                .build();
+                .setExecutor(grpcThreadPoolExecutor).build();
     }
 
     @Bean
