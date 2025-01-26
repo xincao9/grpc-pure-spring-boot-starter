@@ -44,7 +44,7 @@ public class GrpcPureAutoConfiguration {
             GrpcThreadPoolExecutor grpcThreadPoolExecutor) throws Throwable {
         return GrpcChannels.newBuilder().setNameResolverProvider(nameResolverProvider)
                 .setExecutor(grpcThreadPoolExecutor)
-                .setClientInterceptors(Collections.singleton(new InternalClientInterceptor())).build();
+                .build();
     }
 
     @Bean
