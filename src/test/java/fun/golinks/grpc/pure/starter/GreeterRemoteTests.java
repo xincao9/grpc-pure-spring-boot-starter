@@ -4,6 +4,8 @@ import fun.golinks.grpc.pure.GreeterGrpc;
 import fun.golinks.grpc.pure.HelloReply;
 import fun.golinks.grpc.pure.HelloRequest;
 import fun.golinks.grpc.pure.starter.config.GrpcPureConfig;
+import fun.golinks.grpc.pure.util.GrpcFunction;
+import fun.golinks.grpc.pure.util.GrpcInvoker;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
@@ -20,13 +22,20 @@ public class GreeterRemoteTests {
     @Resource
     private GreeterGrpc.GreeterBlockingStub greeterBlockingStub;
 
+    private final GrpcInvoker<HelloRequest, HelloReply> grpcInvoker = GrpcInvoker.wrap(new GrpcFunction<HelloRequest, HelloReply>() {
+        @Override
+        public HelloReply apply(HelloRequest helloRequest) throws Throwable {
+            return greeterBlockingStub.sayHello(helloRequest);
+        }
+    });
+
     @Test
-    public void testSayHello() {
+    public void testSayHello() throws Throwable {
         for (int i = 0; i < 100; i++) {
             HelloRequest request = createHelloRequest();
-            log.info("REQUEST: {}", request);
-            HelloReply response = greeterBlockingStub.sayHello(request);
-            log.info("RESPONSE: {}", response);
+            log.info("REQUEST: {}", request.getName());
+            HelloReply response = grpcInvoker.apply(request);
+            log.info("RESPONSE: {}", response.getMessage());
         }
     }
 

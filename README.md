@@ -27,7 +27,7 @@
 <dependency>
     <groupId>fun.golinks</groupId>
     <artifactId>grpc-pure-spring-boot-starter</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 
@@ -118,6 +118,7 @@ grpc:
 import fun.golinks.grpc.pure.GreeterGrpc;
 import fun.golinks.grpc.pure.HelloReply;
 import fun.golinks.grpc.pure.HelloRequest;
+import fun.golinks.grpc.pure.util.GrpcConsumer;
 import io.grpc.stub.StreamObserver;
 import org.springframework.stereotype.Service;
 
@@ -126,14 +127,14 @@ public class GreeterRemote extends GreeterGrpc.GreeterImplBase {
 
    private static final String GREETING_PREFIX = "Server:Hello ";
 
+   private static final GrpcConsumer<HelloRequest, HelloReply> grpcConsumer = GrpcConsumer.wrap(helloRequest -> buildHelloReply(helloRequest.getName()));
+
    @Override
    public void sayHello(HelloRequest req, StreamObserver<HelloReply> responseObserver) {
-      HelloReply reply = buildHelloReply(req.getName());
-      responseObserver.onNext(reply);
-      responseObserver.onCompleted();
+      grpcConsumer.accept(req, responseObserver);
    }
 
-   private HelloReply buildHelloReply(String name) {
+   private static HelloReply buildHelloReply(String name) {
       return HelloReply.newBuilder()
               .setMessage(GREETING_PREFIX + name)
               .build();
@@ -178,13 +179,15 @@ public class GrpcPureConfig {
 import fun.golinks.grpc.pure.GreeterGrpc;
 import fun.golinks.grpc.pure.HelloReply;
 import fun.golinks.grpc.pure.HelloRequest;
+import fun.golinks.grpc.pure.starter.config.GrpcPureConfig;
+import fun.golinks.grpc.pure.util.GrpcFunction;
+import fun.golinks.grpc.pure.util.GrpcInvoker;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @SpringBootTest(classes = GrpcPureConfig.class)
@@ -195,13 +198,20 @@ public class GreeterRemoteTests {
    @Resource
    private GreeterGrpc.GreeterBlockingStub greeterBlockingStub;
 
+   private final GrpcInvoker<HelloRequest, HelloReply> grpcInvoker = GrpcInvoker.wrap(new GrpcFunction<HelloRequest, HelloReply>() {
+      @Override
+      public HelloReply apply(HelloRequest helloRequest) throws Throwable {
+         return greeterBlockingStub.sayHello(helloRequest);
+      }
+   });
+
    @Test
    public void testSayHello() {
       for (int i = 0; i < 100; i++) {
          HelloRequest request = createHelloRequest();
-         log.info("REQUEST: {}", request);
-         HelloReply response = greeterBlockingStub.sayHello(request);
-         log.info("RESPONSE: {}", response);
+         log.info("REQUEST: {}", request.getName());
+         HelloReply response = grpcInvoker.apply(request);
+         log.info("RESPONSE: {}", response.getMessage());
       }
    }
 

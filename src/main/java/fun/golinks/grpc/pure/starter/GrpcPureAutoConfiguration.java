@@ -5,7 +5,7 @@ import fun.golinks.grpc.pure.GrpcServer;
 import fun.golinks.grpc.pure.discovery.ServerRegister;
 import fun.golinks.grpc.pure.discovery.nacos.NacosNameResolverProvider;
 import fun.golinks.grpc.pure.discovery.nacos.NacosServerRegister;
-import fun.golinks.grpc.pure.interceptor.LoggerClientInterceptor;
+import fun.golinks.grpc.pure.interceptor.InternalClientInterceptor;
 import fun.golinks.grpc.pure.util.GrpcExecutors;
 import fun.golinks.grpc.pure.util.GrpcThreadPoolExecutor;
 import io.grpc.BindableService;
@@ -42,10 +42,9 @@ public class GrpcPureAutoConfiguration {
     @Bean
     public GrpcChannels grpcChannels(NameResolverProvider nameResolverProvider,
             GrpcThreadPoolExecutor grpcThreadPoolExecutor) throws Throwable {
-        LoggerClientInterceptor clientInterceptor = new LoggerClientInterceptor();
         return GrpcChannels.newBuilder().setNameResolverProvider(nameResolverProvider)
-                .setExecutor(grpcThreadPoolExecutor).setClientInterceptors(Collections.singleton(clientInterceptor))
-                .build();
+                .setExecutor(grpcThreadPoolExecutor)
+                .setClientInterceptors(Collections.singleton(new InternalClientInterceptor())).build();
     }
 
     @Bean
