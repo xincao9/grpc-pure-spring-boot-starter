@@ -8,7 +8,9 @@ import fun.golinks.grpc.pure.discovery.nacos.NacosServerRegister;
 import fun.golinks.grpc.pure.util.GrpcExecutors;
 import fun.golinks.grpc.pure.util.GrpcThreadPoolExecutor;
 import io.grpc.BindableService;
+import io.grpc.ClientInterceptor;
 import io.grpc.NameResolverProvider;
+import io.grpc.ServerInterceptor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -16,7 +18,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -39,16 +40,24 @@ public class GrpcPureAutoConfiguration {
 
     @Bean
     public GrpcChannels grpcChannels(NameResolverProvider nameResolverProvider,
-            GrpcThreadPoolExecutor grpcThreadPoolExecutor) throws Throwable {
-        return GrpcChannels.newBuilder().setNameResolverProvider(nameResolverProvider)
-                .setExecutor(grpcThreadPoolExecutor).build();
+                                     GrpcThreadPoolExecutor grpcThreadPoolExecutor, List<ClientInterceptor> clientInterceptors) throws Throwable {
+        GrpcChannels.Builder builder = GrpcChannels.newBuilder().setNameResolverProvider(nameResolverProvider)
+                .setExecutor(grpcThreadPoolExecutor);
+        if (clientInterceptors != null && !clientInterceptors.isEmpty()) {
+            builder.addClientInterceptor(clientInterceptors.toArray(new ClientInterceptor[0]));
+        }
+        return builder.build();
     }
 
     @Bean
     public GrpcServer grpcServer(ServerRegister serverRegister, GrpcPureProperties grpcPureProperties,
-            List<BindableService> bindableServices) throws Throwable {
-        return GrpcServer.newBuilder().setPort(grpcPureProperties.getServer().getPort())
-                .addService(bindableServices.toArray(new BindableService[0])).setServerRegister(serverRegister).build();
+                                 List<BindableService> bindableServices, List<ServerInterceptor> serverInterceptors) throws Throwable {
+        GrpcServer.Builder builder = GrpcServer.newBuilder().setPort(grpcPureProperties.getServer().getPort())
+                .addService(bindableServices.toArray(new BindableService[0])).setServerRegister(serverRegister);
+        if (serverInterceptors != null && !serverInterceptors.isEmpty()) {
+            builder.addServerInterceptor(serverInterceptors.toArray(new ServerInterceptor[0]));
+        }
+        return builder.build();
     }
 
     @ConditionalOnProperty(prefix = "grpc.pure.discovery", name = "type", havingValue = "nacos", matchIfMissing = true)
