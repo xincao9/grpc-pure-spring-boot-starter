@@ -7,13 +7,11 @@ import fun.golinks.grpc.pure.starter.remote.GreeterRemote;
 import io.grpc.ManagedChannel;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 @ImportAutoConfiguration(GrpcPureAutoConfiguration.class)
-@Configuration
 public class GrpcPureConfig {
 
-    private static final String GREETER_APP_URL = "nacos://greeter";
+    private static final String GREETER_APP_URL = "127.0.0.1:9999";
 
     @Bean
     public GreeterGrpc.GreeterBlockingStub greeterBlockingStub(GrpcChannels grpcChannels) {

@@ -12,6 +12,7 @@ import io.grpc.ClientInterceptor;
 import io.grpc.NameResolverProvider;
 import io.grpc.ServerInterceptor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -39,8 +40,9 @@ public class GrpcPureAutoConfiguration {
     }
 
     @Bean
-    public GrpcChannels grpcChannels(NameResolverProvider nameResolverProvider,
-                                     GrpcThreadPoolExecutor grpcThreadPoolExecutor, List<ClientInterceptor> clientInterceptors) throws Throwable {
+    public GrpcChannels grpcChannels(@Autowired(required = false) NameResolverProvider nameResolverProvider,
+            GrpcThreadPoolExecutor grpcThreadPoolExecutor, List<ClientInterceptor> clientInterceptors)
+            throws Throwable {
         GrpcChannels.Builder builder = GrpcChannels.newBuilder().setNameResolverProvider(nameResolverProvider)
                 .setExecutor(grpcThreadPoolExecutor);
         if (clientInterceptors != null && !clientInterceptors.isEmpty()) {
@@ -50,8 +52,9 @@ public class GrpcPureAutoConfiguration {
     }
 
     @Bean
-    public GrpcServer grpcServer(ServerRegister serverRegister, GrpcPureProperties grpcPureProperties,
-                                 List<BindableService> bindableServices, List<ServerInterceptor> serverInterceptors) throws Throwable {
+    public GrpcServer grpcServer(@Autowired(required = false) ServerRegister serverRegister,
+            GrpcPureProperties grpcPureProperties, List<BindableService> bindableServices,
+            List<ServerInterceptor> serverInterceptors) throws Throwable {
         GrpcServer.Builder builder = GrpcServer.newBuilder().setPort(grpcPureProperties.getServer().getPort())
                 .addService(bindableServices.toArray(new BindableService[0])).setServerRegister(serverRegister);
         if (serverInterceptors != null && !serverInterceptors.isEmpty()) {
@@ -60,22 +63,22 @@ public class GrpcPureAutoConfiguration {
         return builder.build();
     }
 
-    @ConditionalOnProperty(prefix = "grpc.pure.discovery", name = "type", havingValue = "nacos", matchIfMissing = true)
+    @ConditionalOnProperty(prefix = "grpc.pure.discovery", name = "type", havingValue = "nacos")
     public static class NacosDiscoveryConfiguration {
 
         private final String applicationName;
-        private final NacosProperties nacosProperties;
+        private final NacosConfig nacosConfig;
 
         public NacosDiscoveryConfiguration(@Value("${spring.application.name}") String applicationName,
                 GrpcPureProperties grpcPureProperties) {
             this.applicationName = applicationName;
-            this.nacosProperties = grpcPureProperties.getDiscovery().getNacos();
+            this.nacosConfig = grpcPureProperties.getDiscovery().getNacos();
         }
 
         @Bean
         public NameResolverProvider nameResolverProvider() throws Throwable {
-            return NacosNameResolverProvider.newBuilder().setServerAddress(nacosProperties.getAddress())
-                    .setUsername(nacosProperties.getUsername()).setPassword(nacosProperties.getPassword()).build();
+            return NacosNameResolverProvider.newBuilder().setServerAddress(nacosConfig.getAddress())
+                    .setUsername(nacosConfig.getUsername()).setPassword(nacosConfig.getPassword()).build();
         }
 
         @Bean
@@ -84,8 +87,8 @@ public class GrpcPureAutoConfiguration {
             if (StringUtils.isBlank(appName)) {
                 appName = applicationName;
             }
-            return NacosServerRegister.newBuilder().setAppName(appName).setServerAddress(nacosProperties.getAddress())
-                    .setUsername(nacosProperties.getUsername()).setPassword(nacosProperties.getPassword())
+            return NacosServerRegister.newBuilder().setAppName(appName).setServerAddress(nacosConfig.getAddress())
+                    .setUsername(nacosConfig.getUsername()).setPassword(nacosConfig.getPassword())
                     .setPort(grpcPureProperties.getServer().getPort()) // 后端服务监听端口
                     .build();
         }

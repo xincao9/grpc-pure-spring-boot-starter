@@ -28,16 +28,16 @@ public class GrpcPureProperties {
     @Data
     public static class DiscoveryConfig {
         /**
-         * 类型 (默认值：nacos)
+         * 类型 (默认值：direct)
          */
-        public static final String DEFAULT_TYPE = "nacos";
+        public static final String DEFAULT_TYPE = "direct";
 
         private String type = DEFAULT_TYPE;
 
         /**
          * Nacos 配置
          */
-        private NacosProperties nacos = new NacosProperties();
+        private NacosConfig nacos = new NacosConfig();
     }
 
     @Data

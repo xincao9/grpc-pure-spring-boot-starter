@@ -6,7 +6,7 @@ import lombok.Data;
  * Nacos配置
  */
 @Data
-public class NacosProperties {
+public class NacosConfig {
     /**
      * 地址
      */
