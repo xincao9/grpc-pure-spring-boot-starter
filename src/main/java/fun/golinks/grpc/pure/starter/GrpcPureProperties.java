@@ -30,7 +30,7 @@ public class GrpcPureProperties {
         /**
          * 类型 (默认值：direct)
          */
-        public static final String DEFAULT_TYPE = "direct";
+        private static final String DEFAULT_TYPE = "direct";
 
         private String type = DEFAULT_TYPE;
 
