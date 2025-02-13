@@ -12,13 +12,14 @@ import io.grpc.ClientInterceptor;
 import io.grpc.NameResolverProvider;
 import io.grpc.ServerInterceptor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -40,11 +41,11 @@ public class GrpcPureAutoConfiguration {
     }
 
     @Bean
-    public GrpcChannels grpcChannels(@Autowired(required = false) NameResolverProvider nameResolverProvider,
+    public GrpcChannels grpcChannels(ObjectProvider<NameResolverProvider> nameResolverProvider,
             GrpcThreadPoolExecutor grpcThreadPoolExecutor, List<ClientInterceptor> clientInterceptors)
             throws Throwable {
-        GrpcChannels.Builder builder = GrpcChannels.newBuilder().setNameResolverProvider(nameResolverProvider)
-                .setExecutor(grpcThreadPoolExecutor);
+        GrpcChannels.Builder builder = GrpcChannels.newBuilder()
+                .setNameResolverProvider(nameResolverProvider.getIfAvailable()).setExecutor(grpcThreadPoolExecutor);
         if (clientInterceptors != null && !clientInterceptors.isEmpty()) {
             builder.addClientInterceptor(clientInterceptors.toArray(new ClientInterceptor[0]));
         }
@@ -52,11 +53,11 @@ public class GrpcPureAutoConfiguration {
     }
 
     @Bean
-    public GrpcServer grpcServer(@Autowired(required = false) ServerRegister serverRegister,
-            GrpcPureProperties grpcPureProperties, List<BindableService> bindableServices,
-            List<ServerInterceptor> serverInterceptors) throws Throwable {
+    public GrpcServer grpcServer(ObjectProvider<ServerRegister> serverRegister, GrpcPureProperties grpcPureProperties,
+            List<BindableService> bindableServices, List<ServerInterceptor> serverInterceptors) throws Throwable {
         GrpcServer.Builder builder = GrpcServer.newBuilder().setPort(grpcPureProperties.getServer().getPort())
-                .addService(bindableServices.toArray(new BindableService[0])).setServerRegister(serverRegister);
+                .addService(bindableServices.toArray(new BindableService[0]))
+                .setServerRegister(serverRegister.getIfAvailable());
         if (serverInterceptors != null && !serverInterceptors.isEmpty()) {
             builder.addServerInterceptor(serverInterceptors.toArray(new ServerInterceptor[0]));
         }
