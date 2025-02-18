@@ -12,14 +12,14 @@ public class GreeterRemote extends GreeterGrpc.GreeterImplBase {
 
     private static final GrpcConsumer<HelloRequest, HelloReply> grpcConsumer = GrpcConsumer.wrap(helloRequest -> buildHelloReply(helloRequest.getName()));
 
-    @Override
-    public void sayHello(HelloRequest req, StreamObserver<HelloReply> responseObserver) {
-        grpcConsumer.accept(req, responseObserver);
-    }
-
     private static HelloReply buildHelloReply(String name) {
         return HelloReply.newBuilder()
                 .setMessage(GREETING_PREFIX + name)
                 .build();
+    }
+
+    @Override
+    public void sayHello(HelloRequest req, StreamObserver<HelloReply> responseObserver) {
+        grpcConsumer.accept(req, responseObserver);
     }
 }

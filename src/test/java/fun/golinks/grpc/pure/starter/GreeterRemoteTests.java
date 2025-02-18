@@ -36,6 +36,7 @@ public class GreeterRemoteTests {
             log.info("REQUEST: {}", request.getName());
             HelloReply response = grpcInvoker.apply(request);
             log.info("RESPONSE: {}", response.getMessage());
+            Thread.sleep(50);
         }
     }
 

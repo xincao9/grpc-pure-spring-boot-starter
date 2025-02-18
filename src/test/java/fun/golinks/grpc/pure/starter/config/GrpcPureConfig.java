@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Bean;
 @ImportAutoConfiguration(GrpcPureAutoConfiguration.class)
 public class GrpcPureConfig {
 
-    private static final String GREETER_APP_URL = "127.0.0.1:9999";
+    private static final String GREETER_APP_URL = "nacos://greeter";
 
     @Bean
     public GreeterGrpc.GreeterBlockingStub greeterBlockingStub(GrpcChannels grpcChannels) {

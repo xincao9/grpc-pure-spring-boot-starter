@@ -1,9 +1,11 @@
 package fun.golinks.grpc.pure.starter;
 
+import com.alibaba.nacos.api.exception.NacosException;
 import fun.golinks.grpc.pure.GrpcChannels;
 import fun.golinks.grpc.pure.GrpcServer;
 import fun.golinks.grpc.pure.discovery.ServerRegister;
 import fun.golinks.grpc.pure.discovery.nacos.NacosNameResolverProvider;
+import fun.golinks.grpc.pure.discovery.nacos.NacosNamingService;
 import fun.golinks.grpc.pure.discovery.nacos.NacosServerRegister;
 import fun.golinks.grpc.pure.util.EnhanceThreadPoolExecutor;
 import fun.golinks.grpc.pure.util.Executors;
@@ -68,30 +70,34 @@ public class GrpcPureAutoConfiguration {
     public static class NacosDiscoveryConfiguration {
 
         private final String applicationName;
-        private final NacosConfig nacosConfig;
 
         public NacosDiscoveryConfiguration(@Value("${spring.application.name}") String applicationName,
                 GrpcPureProperties grpcPureProperties) {
             this.applicationName = applicationName;
-            this.nacosConfig = grpcPureProperties.getDiscovery().getNacos();
         }
 
         @Bean
-        public NameResolverProvider nameResolverProvider() throws Throwable {
-            return NacosNameResolverProvider.newBuilder().setServerAddress(nacosConfig.getAddress())
+        public NacosNamingService nacosNamingService(GrpcPureProperties grpcPureProperties) throws NacosException {
+            NacosConfig nacosConfig = grpcPureProperties.getDiscovery().getNacos();
+            return NacosNamingService.newBuilder().setServerAddress(nacosConfig.getAddress())
                     .setUsername(nacosConfig.getUsername()).setPassword(nacosConfig.getPassword())
                     .setNamespace(nacosConfig.getNamespace()).build();
         }
 
         @Bean
-        public ServerRegister serverRegister(GrpcPureProperties grpcPureProperties) throws Throwable {
+        public NameResolverProvider nameResolverProvider(NacosNamingService nacosNamingService) throws Throwable {
+            return NacosNameResolverProvider.newBuilder().setNacosNamingService(nacosNamingService).build();
+        }
+
+        @Bean
+        public ServerRegister serverRegister(GrpcPureProperties grpcPureProperties,
+                NacosNamingService nacosNamingService) throws Throwable {
             String appName = grpcPureProperties.getAppName();
             if (StringUtils.isBlank(appName)) {
                 appName = applicationName;
             }
-            return NacosServerRegister.newBuilder().setAppName(appName).setServerAddress(nacosConfig.getAddress())
-                    .setUsername(nacosConfig.getUsername()).setPassword(nacosConfig.getPassword())
-                    .setNamespace(nacosConfig.getNamespace()).setPort(grpcPureProperties.getServer().getPort()) // 后端服务监听端口
+            return NacosServerRegister.newBuilder().setNacosNamingService(nacosNamingService).setAppName(appName)
+                    .setPort(grpcPureProperties.getServer().getPort()) // 后端服务监听端口
                     .build();
         }
     }

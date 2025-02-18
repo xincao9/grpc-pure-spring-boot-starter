@@ -1,6 +1,8 @@
 # grpc-pure-spring-boot-starter
 
-`grpc-pure-spring-boot-starter` 是一个简化 gRPC 集成到 Spring Boot 应用中的轻量级框架。gRPC 作为优秀的开源 RPC 框架，在许多大型企业中被广泛使用。然而，对于小型企业而言，缺乏扩展能力可能会成为阻碍大规模使用的难点。本项目基于本人在互联网公司参与大规模 gRPC 服务落地项目的经验沉淀，为开发者提供一个易用且实用的集成示例。
+`grpc-pure-spring-boot-starter` 是一个简化 gRPC 集成到 Spring Boot 应用中的轻量级框架。gRPC 作为优秀的开源 RPC
+框架，在许多大型企业中被广泛使用。然而，对于小型企业而言，缺乏扩展能力可能会成为阻碍大规模使用的难点。本项目基于本人在互联网公司参与大规模
+gRPC 服务落地项目的经验沉淀，为开发者提供一个易用且实用的集成示例。
 
 ## 核心功能
 
@@ -17,7 +19,9 @@
 
 ### 环境准备
 
-本项目示例代码依赖于 Nacos 注册中心。您可以参考 [Nacos 官方快速启动指南](https://nacos.io/docs/v2.3/quickstart/quick-start/) 安装和启动 Nacos Server。
+本项目示例代码依赖于 Nacos
+注册中心。您可以参考 [Nacos 官方快速启动指南](https://nacos.io/docs/v2.3/quickstart/quick-start/) 安装和启动 Nacos
+Server。
 
 ### 添加依赖
 
@@ -125,20 +129,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class GreeterRemote extends GreeterGrpc.GreeterImplBase {
 
-   private static final String GREETING_PREFIX = "Server:Hello ";
+    private static final String GREETING_PREFIX = "Server:Hello ";
 
-   private static final GrpcConsumer<HelloRequest, HelloReply> grpcConsumer = GrpcConsumer.wrap(helloRequest -> buildHelloReply(helloRequest.getName()));
+    private static final GrpcConsumer<HelloRequest, HelloReply> grpcConsumer = GrpcConsumer.wrap(helloRequest -> buildHelloReply(helloRequest.getName()));
 
-   @Override
-   public void sayHello(HelloRequest req, StreamObserver<HelloReply> responseObserver) {
-      grpcConsumer.accept(req, responseObserver);
-   }
+    @Override
+    public void sayHello(HelloRequest req, StreamObserver<HelloReply> responseObserver) {
+        grpcConsumer.accept(req, responseObserver);
+    }
 
-   private static HelloReply buildHelloReply(String name) {
-      return HelloReply.newBuilder()
-              .setMessage(GREETING_PREFIX + name)
-              .build();
-   }
+    private static HelloReply buildHelloReply(String name) {
+        return HelloReply.newBuilder()
+                .setMessage(GREETING_PREFIX + name)
+                .build();
+    }
 }
 ```
 
@@ -193,32 +197,32 @@ import javax.annotation.Resource;
 @SpringBootTest(classes = GrpcPureConfig.class)
 public class GreeterRemoteTests {
 
-   private static final int RANDOM_STRING_LENGTH = 32;
+    private static final int RANDOM_STRING_LENGTH = 32;
 
-   @Resource
-   private GreeterGrpc.GreeterBlockingStub greeterBlockingStub;
+    @Resource
+    private GreeterGrpc.GreeterBlockingStub greeterBlockingStub;
 
-   private final GrpcInvoker<HelloRequest, HelloReply> grpcInvoker = GrpcInvoker.wrap(new GrpcFunction<HelloRequest, HelloReply>() {
-      @Override
-      public HelloReply apply(HelloRequest helloRequest) throws Throwable {
-         return greeterBlockingStub.sayHello(helloRequest);
-      }
-   });
+    private final GrpcInvoker<HelloRequest, HelloReply> grpcInvoker = GrpcInvoker.wrap(new GrpcFunction<HelloRequest, HelloReply>() {
+        @Override
+        public HelloReply apply(HelloRequest helloRequest) throws Throwable {
+            return greeterBlockingStub.sayHello(helloRequest);
+        }
+    });
 
-   @Test
-   public void testSayHello() {
-      for (int i = 0; i < 100; i++) {
-         HelloRequest request = createHelloRequest();
-         log.info("REQUEST: {}", request.getName());
-         HelloReply response = grpcInvoker.apply(request);
-         log.info("RESPONSE: {}", response.getMessage());
-      }
-   }
+    @Test
+    public void testSayHello() {
+        for (int i = 0; i < 100; i++) {
+            HelloRequest request = createHelloRequest();
+            log.info("REQUEST: {}", request.getName());
+            HelloReply response = grpcInvoker.apply(request);
+            log.info("RESPONSE: {}", response.getMessage());
+        }
+    }
 
-   private HelloRequest createHelloRequest() {
-      String randomName = RandomStringUtils.randomAlphabetic(RANDOM_STRING_LENGTH);
-      return HelloRequest.newBuilder().setName(randomName).build();
-   }
+    private HelloRequest createHelloRequest() {
+        String randomName = RandomStringUtils.randomAlphabetic(RANDOM_STRING_LENGTH);
+        return HelloRequest.newBuilder().setName(randomName).build();
+    }
 }
 ```
 
