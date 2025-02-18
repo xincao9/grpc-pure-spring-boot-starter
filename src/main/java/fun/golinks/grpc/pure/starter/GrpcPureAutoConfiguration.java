@@ -5,8 +5,8 @@ import fun.golinks.grpc.pure.GrpcServer;
 import fun.golinks.grpc.pure.discovery.ServerRegister;
 import fun.golinks.grpc.pure.discovery.nacos.NacosNameResolverProvider;
 import fun.golinks.grpc.pure.discovery.nacos.NacosServerRegister;
-import fun.golinks.grpc.pure.util.GrpcExecutors;
-import fun.golinks.grpc.pure.util.GrpcThreadPoolExecutor;
+import fun.golinks.grpc.pure.util.EnhanceThreadPoolExecutor;
+import fun.golinks.grpc.pure.util.Executors;
 import io.grpc.BindableService;
 import io.grpc.ClientInterceptor;
 import io.grpc.NameResolverProvider;
@@ -35,17 +35,17 @@ public class GrpcPureAutoConfiguration {
     private static final long KEEP_ALIVE_TIME = 1L;
 
     @Bean
-    public GrpcThreadPoolExecutor grpcThreadPoolExecutor() {
-        return GrpcExecutors.newGrpcThreadPoolExecutor("grpc-invoke", CORE_POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE_TIME,
+    public EnhanceThreadPoolExecutor enhanceThreadPoolExecutor() {
+        return Executors.newGrpcThreadPoolExecutor("grpc-invoke", CORE_POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE_TIME,
                 TimeUnit.MINUTES, new LinkedBlockingDeque<>(1000), new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
     @Bean
     public GrpcChannels grpcChannels(ObjectProvider<NameResolverProvider> nameResolverProvider,
-            GrpcThreadPoolExecutor grpcThreadPoolExecutor, List<ClientInterceptor> clientInterceptors)
+            EnhanceThreadPoolExecutor enhanceThreadPoolExecutor, List<ClientInterceptor> clientInterceptors)
             throws Throwable {
         GrpcChannels.Builder builder = GrpcChannels.newBuilder()
-                .setNameResolverProvider(nameResolverProvider.getIfAvailable()).setExecutor(grpcThreadPoolExecutor);
+                .setNameResolverProvider(nameResolverProvider.getIfAvailable()).setExecutor(enhanceThreadPoolExecutor);
         if (clientInterceptors != null && !clientInterceptors.isEmpty()) {
             builder.addClientInterceptor(clientInterceptors.toArray(new ClientInterceptor[0]));
         }
@@ -90,7 +90,7 @@ public class GrpcPureAutoConfiguration {
             }
             return NacosServerRegister.newBuilder().setAppName(appName).setServerAddress(nacosConfig.getAddress())
                     .setUsername(nacosConfig.getUsername()).setPassword(nacosConfig.getPassword())
-                    .setPort(grpcPureProperties.getServer().getPort()) // 后端服务监听端口
+                    .setNamespace(nacosConfig.getNamespace()).setPort(grpcPureProperties.getServer().getPort()) // 后端服务监听端口
                     .build();
         }
     }

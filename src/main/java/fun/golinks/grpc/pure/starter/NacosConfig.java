@@ -21,4 +21,9 @@ public class NacosConfig {
      * 密码
      */
     private String password = "nacos";
+
+    /**
+     * 命名空间
+     */
+    private String namespace = "public";
 }

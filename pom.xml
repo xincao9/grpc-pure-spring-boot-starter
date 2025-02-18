@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>fun.golinks</groupId>
 	<artifactId>grpc-pure-spring-boot-starter</artifactId>
-	<version>1.0.5</version>
+	<version>1.0.6-SNAPSHOT</version>
 	<name>grpc-pure-spring-boot-starter</name>
 	<description>
 		`grpc-pure-spring-boot-starter` 是一个简化 gRPC 集成到 Spring Boot 应用中的轻量级框架。gRPC 作为优秀的开源 RPC 框架，在许多大型企业中被广泛使用。然而，对于小型企业而言，缺乏扩展能力可能会成为阻碍大规模使用的难点。本项目基于本人在互联网公司参与大规模 gRPC 服务落地项目的经验沉淀，为开发者提供一个易用且实用的集成示例。
@@ -17,6 +17,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<grpc-pure.version>1.0.6-SNAPSHOT</grpc-pure.version>
 	</properties>
 	<url>https://github.com/xincao9/grpc-pure</url>
 	<developers>
@@ -65,53 +66,13 @@
 		<dependency>
 			<groupId>fun.golinks</groupId>
 			<artifactId>grpc-pure</artifactId>
-			<version>1.0.5</version>
+			<version>${grpc-pure.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
 	</dependencies>
-	<repositories>
-		<repository>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>aliyun-maven</id>
-			<url>https://maven.aliyun.com/repository/public</url>
-		</repository>
-		<repository>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>central</id>
-			<name>Central Repository</name>
-			<url>https://repo.maven.apache.org/maven2</url>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>aliyun-maven</id>
-			<url>https://maven.aliyun.com/repository/public</url>
-		</pluginRepository>
-		<pluginRepository>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>central</id>
-			<name>Central Repository</name>
-			<url>https://repo.maven.apache.org/maven2</url>
-		</pluginRepository>
-	</pluginRepositories>
 	<build>
 		<extensions>
 			<extension>
@@ -124,7 +85,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.7.0</version>
 				<configuration>
 					<parameters>true</parameters>
 					<source>${maven.compiler.source}</source>
@@ -163,7 +123,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>2.2.1</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
@@ -176,7 +135,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
