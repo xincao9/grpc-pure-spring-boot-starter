@@ -71,8 +71,7 @@ public class GrpcPureAutoConfiguration {
 
         private final String applicationName;
 
-        public NacosDiscoveryConfiguration(@Value("${spring.application.name}") String applicationName,
-                GrpcPureProperties grpcPureProperties) {
+        public NacosDiscoveryConfiguration(@Value("${spring.application.name}") String applicationName) {
             this.applicationName = applicationName;
         }
 
@@ -85,13 +84,13 @@ public class GrpcPureAutoConfiguration {
         }
 
         @Bean
-        public NameResolverProvider nameResolverProvider(NacosNamingService nacosNamingService) throws Throwable {
+        public NameResolverProvider nameResolverProvider(NacosNamingService nacosNamingService) {
             return NacosNameResolverProvider.newBuilder().setNacosNamingService(nacosNamingService).build();
         }
 
         @Bean
         public ServerRegister serverRegister(GrpcPureProperties grpcPureProperties,
-                NacosNamingService nacosNamingService) throws Throwable {
+                NacosNamingService nacosNamingService) {
             String appName = grpcPureProperties.getAppName();
             if (StringUtils.isBlank(appName)) {
                 appName = applicationName;
