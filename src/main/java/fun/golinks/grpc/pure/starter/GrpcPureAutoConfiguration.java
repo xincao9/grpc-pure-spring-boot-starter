@@ -79,7 +79,8 @@ public class GrpcPureAutoConfiguration {
         @Bean
         public NameResolverProvider nameResolverProvider() throws Throwable {
             return NacosNameResolverProvider.newBuilder().setServerAddress(nacosConfig.getAddress())
-                    .setUsername(nacosConfig.getUsername()).setPassword(nacosConfig.getPassword()).build();
+                    .setUsername(nacosConfig.getUsername()).setPassword(nacosConfig.getPassword())
+                    .setNamespace(nacosConfig.getNamespace()).build();
         }
 
         @Bean
